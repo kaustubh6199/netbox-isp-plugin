@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% load menu_item from extras %}
+
+{% block title %}{{ splitter.name }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title">{{ splitter.name }}</h2>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-3">Site</dt>
+                    <dd class="col-sm-9">{{ splitter.site }}</dd>
+
+                    <dt class="col-sm-3">Location</dt>
+                    <dd class="col-sm-9">{{ splitter.location|default:"-" }}</dd>
+
+                    <dt class="col-sm-3">Input Ports</dt>
+                    <dd class="col-sm-9">{{ splitter.input_ports }}</dd>
+
+                    <dt class="col-sm-3">Output Ports</dt>
+                    <dd class="col-sm-9">{{ splitter.output_ports }}</dd>
+
+                    <dt class="col-sm-3">Split Ratio</dt>
+                    <dd class="col-sm-9">{{ splitter.split_ratio }}</dd>
+
+                    <dt class="col-sm-3">Upstream Wavelength (nm)</dt>
+                    <dd class="col-sm-9">{{ splitter.wavelength_upstream_min }} - {{ splitter.wavelength_upstream_max }}</dd>
+
+                    <dt class="col-sm-3">Downstream Wavelength (nm)</dt>
+                    <dd class="col-sm-9">{{ splitter.wavelength_downstream_min }} - {{ splitter.wavelength_downstream_max }}</dd>
+
+                    {% if splitter.wavelength_video_min and splitter.wavelength_video_max %}
+                    <dt class="col-sm-3">Video Wavelength (nm)</dt>
+                    <dd class="col-sm-9">{{ splitter.wavelength_video_min }} - {{ splitter.wavelength_video_max }}</dd>
+                    {% endif %}
+
+                    <dt class="col-sm-3">Insertion Loss (dB)</dt>
+                    <dd class="col-sm-9">{{ splitter.insertion_loss }}</dd>
+
+                    <dt class="col-sm-3">Splitter Class</dt>
+                    <dd class="col-sm-9">{{ splitter.get_splitter_class_display }}</dd>
+
+                    <dt class="col-sm-3">Manufacturer</dt>
+                    <dd class="col-sm-9">{{ splitter.manufacturer|default:"-" }}</dd>
+
+                    <dt class="col-sm-3">Part Number</dt>
+                    <dd class="col-sm-9">{{ splitter.part_number|default:"-" }}</dd>
+
+                    <dt class="col-sm-3">Passive Component</dt>
+                    <dd class="col-sm-9">{% if splitter.is_passive %}Yes{% else %}No{% endif %}</dd>
+                </dl>
+            </div>
+        </div>
+
+        {% if user.has_perm "netbox_fiber.change_opticalsplitter" %}
+        <div class="card">
+            <div class="card-body">
+                <a href="{% url 'netbox_fiber:splitter_edit' splitter.pk %}" class="btn btn-primary">
+                    <i class="mdi mdi-lead-pencil"></i> Edit Splitter
+                </a>
+                <a href="{% url 'netbox_fiber:splitter_delete' splitter.pk %}" class="btn btn-danger">
+                    <i class="mdi mdi-delete"></i> Delete Splitter
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

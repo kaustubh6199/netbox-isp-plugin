@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% load render_table from django_tables2 %}
+{% load menu_item from extras %}
+
+{% block title %}Optical Splitters{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title">Optical Splitters</h2>
+                {% if user.has_perm "netbox_fiber.add_opticalsplitter" %}
+                <a href="{% url 'netbox_fiber:splitter_add' %}" class="btn btn-primary mb-3">
+                    <i class="mdi mdi-plus-thick"></i> Add Optical Splitter
+                </a>
+                {% endif %}
+            </div>
+        </div>
+        
+        {% if splitters %}
+        <div class="card">
+            <div class="card-body">
+                {% include "utilities/paginator.html" with page=splitters %}
+            </div>
+            <div class="table-responsive">
+                {% table splitters %}
+            </div>
+            <div class="card-body">
+                {% include "utilities/paginator.html" with page=splitters %}
+            </div>
+        </div>
+        {% else %}
+        <div class="card">
+            <div class="card-body">
+                <p class="text-muted">No optical splitters found.</p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

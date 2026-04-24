@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% load menu_item from extras %}
+
+{% block title %}{{ enclosure.name }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title">{{ enclosure.name }}</h2>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-3">Site</dt>
+                    <dd class="col-sm-9">{{ enclosure.site }}</dd>
+
+                    <dt class="col-sm-3">Location</dt>
+                    <dd class="col-sm-9">{{ enclosure.location|default:"-" }}</dd>
+
+                    <dt class="col-sm-3">Rack</dt>
+                    <dd class="col-sm-9">{{ enclosure.rack|default:"-" }}</dd>
+
+                    <dt class="col-sm-3">Position (U)</dt>
+                    <dd class="col-sm-9">{{ enclosure.position }}</dd>
+
+                    <dt class="col-sm-3">Height (U)</dt>
+                    <dd class="col-sm-9">{{ enclosure.height }}</dd>
+
+                    <dt class="col-sm-3">Enclosure Type</dt>
+                    <dd class="col-sm-9">{{ enclosure.get_enclosure_type_display }}</dd>
+
+                    <dt class="col-sm-3">Port Count</dt>
+                    <dd class="col-sm-9">{{ enclosure.port_count }}</dd>
+
+                    <dt class="col-sm-3">Max Split Ratio</dt>
+                    <dd class="col-sm-9">{{ enclosure.max_split_ratio|default:"-" }}</dd>
+
+                    {% if enclosure.layout_data %}
+                    <dt class="col-sm-3">Layout Data</dt>
+                    <dd class="col-sm-9"><pre>{{ enclosure.layout_data|pprint }}</pre></dd>
+                    {% endif %}
+                </dl>
+            </div>
+        </div>
+
+        {% if user.has_perm "netbox_fiber.change_fiberenclosure" %}
+        <div class="card">
+            <div class="card-body">
+                <a href="{% url 'netbox_fiber:enclosure_edit' enclosure.pk %}" class="btn btn-primary">
+                    <i class="mdi mdi-lead-pencil"></i> Edit Enclosure
+                </a>
+                <a href="{% url 'netbox_fiber:enclosure_delete' enclosure.pk %}" class="btn btn-danger">
+                    <i class="mdi mdi-delete"></i> Delete Enclosure
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

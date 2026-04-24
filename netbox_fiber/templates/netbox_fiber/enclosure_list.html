@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% load menu_item from extras %}
+
+{% block title %}Fiber Enclosures{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title">Fiber Enclosures</h2>
+                {% if user.has_perm "netbox_fiber.add_fiberenclosure" %}
+                <a href="{% url 'netbox_fiber:enclosure_add' %}" class="btn btn-primary mb-3">
+                    <i class="mdi mdi-plus-thick"></i> Add Fiber Enclosure
+                </a>
+                {% endif %}
+            </div>
+        </div>
+
+        {% if enclosures %}
+        <div class="card">
+            <div class="card-body">
+                <h3>Enclosures</h3>
+                <ul class="list-group">
+                    {% for enclosure in enclosures %}
+                    <li class="list-group-item">
+                        <h4><a href="{% url 'netbox_fiber:enclosure' enclosure.pk %}">{{ enclosure.name }}</a></h4>
+                        <p><strong>Site:</strong> {{ enclosure.site }}</p>
+                        <p><strong>Location:</strong> {{ enclosure.location|default:"-" }}</p>
+                        <p><strong>Rack:</strong> {{ enclosure.rack|default:"-" }}</p>
+                        <p><strong>Position:</strong> {{ enclosure.position }}</p>
+                        <p><strong>Height:</strong> {{ enclosure.height }} U</p>
+                        <p><strong>Type:</strong> {{ enclosure.get_enclosure_type_display }}</p>
+                        <p><strong>Port Count:</strong> {{ enclosure.port_count }}</p>
+                    </li>
+                    {% empty %}
+                    <li class="list-group-item">No enclosures found.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="card-body">
+                {% include "utilities/paginator.html" with page=enclosures %}
+            </div>
+        </div>
+        {% else %}
+        <div class="card">
+            <div class="card-body">
+                <p class="text-muted">No fiber enclosures found.</p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
