@@ -26,7 +26,8 @@ if [ -z "$1" ]; then
     usage
 fi
 
-NETBOX_ROOT="$1"
+# Remove trailing slash if present to avoid double slashes in paths
+NETBOX_ROOT="${1%/}"
 PLUGINS_DIR="$NETBOX_ROOT/plugins"
 
 # Verify NetBox root directory exists
