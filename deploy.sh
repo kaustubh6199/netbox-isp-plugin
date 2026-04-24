@@ -51,10 +51,21 @@ fi
 echo "Copying NetBox Fiber plugin to '$PLUGINS_DIR'..."
 cp -r netbox_fiber "$PLUGINS_DIR/"
 
+# Find Python command (try python first, then python3)
+PYTHON_CMD=""
+if command -v python &> /dev/null; then
+    PYTHON_CMD="python"
+elif command -v python3 &> /dev/null; then
+    PYTHON_CMD="python3"
+else
+    echo "Error: Neither 'python' nor 'python3' command found. Please ensure Python is installed and in your PATH."
+    exit 1
+fi
+
 # Change to NetBox directory and run migrations
-echo "Running database migrations..."
+echo "Running database migrations using '$PYTHON_CMD'..."
 cd "$NETBOX_ROOT"
-python manage.py migrate
+"$PYTHON_CMD" manage.py migrate
 
 echo ""
 echo "=== Installation Complete ==="

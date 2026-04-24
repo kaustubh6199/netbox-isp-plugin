@@ -39,10 +39,20 @@ try {
     }
     Copy-Item -Path $pluginSource -Destination $pluginDest -Recurse
 
+    # Find Python command
+    $pythonCmd = $null
+    if (Get-Command python -ErrorAction SilentlyContinue) {
+        $pythonCmd = "python"
+    } elseif (Get-Command python3 -ErrorAction SilentlyContinue) {
+        $pythonCmd = "python3"
+    } else {
+        throw "Neither 'python' nor 'python3' command found. Please ensure Python is installed and in your PATH."
+    }
+
     # Change to NetBox directory and run migrations
-    Write-Host "Running database migrations..."
+    Write-Host "Running database migrations using '$pythonCmd'..."
     Push-Location -Path $NetBoxRoot
-    python manage.py migrate
+    & $pythonCmd manage.py migrate
     Pop-Location
 
     Write-Host ""
