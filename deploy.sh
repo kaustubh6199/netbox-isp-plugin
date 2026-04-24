@@ -51,15 +51,50 @@ fi
 echo "Copying NetBox Fiber plugin to '$PLUGINS_DIR'..."
 cp -r netbox_fiber "$PLUGINS_DIR/"
 
-# Find Python command (try python first, then python3)
+# Find NetBox virtual environment and Python interpreter
 PYTHON_CMD=""
-if command -v python &> /dev/null; then
-    PYTHON_CMD="python"
-elif command -v python3 &> /dev/null; then
-    PYTHON_CMD="python3"
-else
-    echo "Error: Neither 'python' nor 'python3' command found. Please ensure Python is installed and in your PATH."
-    exit 1
+
+# Common NetBox virtual environment locations
+VENV_PATHS=(
+    "$NETBOX_ROOT/../venv"
+    "$NETBOX_ROOT/venv"
+    "/opt/netbox/venv"
+    "/usr/local/netbox/venv"
+    "$HOME/netbox/venv"
+)
+
+# Try to find the virtual environment
+for venv_path in "${VENV_PATHS[@]}"; do
+    if [ -f "$venv_path/bin/python" ] && [ -d "$venv_path" ]; then
+        PYTHON_CMD="$venv_path/bin/python"
+        echo "Found NetBox virtual environment at: $venv_path"
+        break
+    fi
+done
+
+# If not found in common locations, try to detect from manage.py shebang or fallback to system python
+if [ -z "$PYTHON_CMD" ]; then
+    # Check if manage.py has a shebang pointing to a specific python
+    if [ -f "$NETBOX_ROOT/manage.py" ]; then
+        SHEBANG=$(head -1 "$NETBOX_ROOT/manage.py" | grep -o 'python[^ ]*' || true)
+        if [ -n "$SHEBANG" ] && [ -x "$(command -v $SHEBANG)" ]; then
+            PYTHON_CMD=$(command -v $SHEBANG)
+            echo "Using Python from manage.py shebang: $PYTHON_CMD"
+        fi
+    fi
+fi
+
+# Fallback to system python/python3 if still not found
+if [ -z "$PYTHON_CMD" ]; then
+    if command -v python &> /dev/null; then
+        PYTHON_CMD="python"
+    elif command -v python3 &> /dev/null; then
+        PYTHON_CMD="python3"
+    else
+        echo "Error: Neither 'python' nor 'python3' command found. Please ensure Python is installed and in your PATH."
+        exit 1
+    fi
+    echo "Using system Python: $PYTHON_CMD"
 fi
 
 # Change to NetBox directory and run migrations
